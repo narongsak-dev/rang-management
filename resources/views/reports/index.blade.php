@@ -1,21 +1,32 @@
-<x-app-layout>
-    <x-slot name="header"><h2 class="font-semibold text-xl text-gray-800 leading-tight">Reports</h2></x-slot>
-    <div class="py-8">
-        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
-            <div class="grid grid-cols-2 gap-6">
-                <a href="{{ route('reports.sales') }}" class="block bg-white shadow-sm sm:rounded-lg p-8 text-center hover:shadow-md">
-                    <div class="text-4xl mb-3">💰</div>
-                    <div class="text-lg font-bold text-gray-800">Sales Report</div>
-                    <div class="text-sm text-gray-500 mt-1">View sales history and revenue</div>
-                </a>
-                @can('update', App\Models\Product::class)
-                <a href="{{ route('reports.inventory') }}" class="block bg-white shadow-sm sm:rounded-lg p-8 text-center hover:shadow-md">
-                    <div class="text-4xl mb-3">📦</div>
-                    <div class="text-lg font-bold text-gray-800">Inventory Report</div>
-                    <div class="text-sm text-gray-500 mt-1">View stock levels and movements</div>
-                </a>
-                @endcan
+@extends('layouts.admin')
+
+@section('title', 'Reports')
+
+@section('breadcrumbs')
+    <li class="breadcrumb-item active">Reports</li>
+@endsection
+
+@section('content')
+<div class="row g-4">
+    <div class="col-md-6">
+        <a href="{{ route('reports.sales') }}" class="card text-decoration-none text-center h-100 shadow-sm hover-shadow">
+            <div class="card-body py-5">
+                <div class="fs-1 mb-3">💰</div>
+                <h5 class="fw-bold">Sales Report</h5>
+                <p class="text-muted small mb-0">View sales history and revenue</p>
             </div>
-        </div>
+        </a>
     </div>
-</x-app-layout>
+    @can('update', App\Models\Product::class)
+    <div class="col-md-6">
+        <a href="{{ route('reports.inventory') }}" class="card text-decoration-none text-center h-100 shadow-sm">
+            <div class="card-body py-5">
+                <div class="fs-1 mb-3">📦</div>
+                <h5 class="fw-bold">Inventory Report</h5>
+                <p class="text-muted small mb-0">View stock levels and movements</p>
+            </div>
+        </a>
+    </div>
+    @endcan
+</div>
+@endsection

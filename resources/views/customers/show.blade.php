@@ -1,54 +1,80 @@
-<x-app-layout>
-    <x-slot name="header">
-        <div class="flex justify-between items-center">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">Customer: {{ $customer->name }}</h2>
-            <a href="{{ route('customers.edit', $customer) }}" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded text-sm">Edit</a>
-        </div>
-    </x-slot>
-    <div class="py-8">
-        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8 space-y-6">
-            <div class="bg-white shadow-sm sm:rounded-lg p-6">
-                <h3 class="font-semibold text-gray-700 mb-3">Customer Info</h3>
-                <dl class="grid grid-cols-2 gap-3 text-sm">
-                    <div><dt class="text-gray-500">Citizen ID</dt><dd class="font-mono">{{ $customer->citizen_id }}</dd></div>
-                    <div><dt class="text-gray-500">Phone</dt><dd>{{ $customer->phone ?? '-' }}</dd></div>
-                    <div class="col-span-2"><dt class="text-gray-500">Address</dt><dd>{{ $customer->address ?? '-' }}</dd></div>
+@extends('layouts.admin')
+
+@section('title', 'Customer: ' . $customer->name)
+
+@section('breadcrumbs')
+    <li class="breadcrumb-item"><a href="{{ route('customers.index') }}">Customers</a></li>
+    <li class="breadcrumb-item active">{{ $customer->name }}</li>
+@endsection
+
+@section('content')
+<div class="row g-4">
+    <div class="col-12 d-flex justify-content-end">
+        <a href="{{ route('customers.edit', $customer) }}" class="btn btn-primary">
+            <i class="bi bi-pencil"></i> Edit
+        </a>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header"><h6 class="mb-0">Customer Info</h6></div>
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-4 text-muted">Citizen ID</dt>
+                    <dd class="col-sm-8 font-monospace">{{ $customer->citizen_id }}</dd>
+                    <dt class="col-sm-4 text-muted">Phone</dt>
+                    <dd class="col-sm-8">{{ $customer->phone ?? '-' }}</dd>
+                    <dt class="col-sm-4 text-muted">Address</dt>
+                    <dd class="col-sm-8">{{ $customer->address ?? '-' }}</dd>
                 </dl>
             </div>
-            <div class="bg-white shadow-sm sm:rounded-lg p-6">
-                <div class="flex justify-between items-center mb-3">
-                    <h3 class="font-semibold text-gray-700">Memberships</h3>
-                    <a href="{{ route('memberships.create') }}?customer_id={{ $customer->id }}" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm">+ New Membership</a>
-                </div>
+        </div>
+    </div>
+
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h6 class="mb-0">Memberships</h6>
+                <a href="{{ route('memberships.create') }}?customer_id={{ $customer->id }}" class="btn btn-sm btn-success">
+                    + New Membership
+                </a>
+            </div>
+            <div class="card-body">
                 @forelse($customer->memberships as $m)
-                <div class="flex justify-between items-center py-2 border-b last:border-0">
+                <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
                     <div>
-                        <span class="font-mono font-medium">{{ $m->member_no }}</span>
-                        <span class="text-sm text-gray-500 ml-2">{{ $m->started_at->format('d/m/Y') }} – {{ $m->expires_at->format('d/m/Y') }}</span>
+                        <span class="font-monospace fw-medium">{{ $m->member_no }}</span>
+                        <span class="text-muted small ms-2">{{ $m->started_at->format('d/m/Y') }} – {{ $m->expires_at->format('d/m/Y') }}</span>
                     </div>
-                    <div class="flex items-center gap-2">
-                        <span class="px-2 py-1 text-xs rounded-full {{ $m->status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">{{ $m->status }}</span>
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="badge {{ $m->status === 'active' ? 'bg-success' : 'bg-danger' }}">{{ $m->status }}</span>
                         <form method="POST" action="{{ route('memberships.renew', $m) }}">@csrf
-                            <button type="submit" class="text-sm text-blue-600 hover:text-blue-900">Renew</button>
+                            <button type="submit" class="btn btn-sm btn-outline-primary">Renew</button>
                         </form>
                     </div>
                 </div>
                 @empty
-                <p class="text-gray-500 text-sm">No memberships yet.</p>
-                @endforelse
-            </div>
-            <div class="bg-white shadow-sm sm:rounded-lg p-6">
-                <h3 class="font-semibold text-gray-700 mb-3">Recent Sales</h3>
-                @forelse($customer->sales as $sale)
-                <div class="flex justify-between text-sm py-2 border-b last:border-0">
-                    <a href="{{ route('pos.receipt', $sale) }}" class="font-mono text-indigo-600">{{ $sale->order_no }}</a>
-                    <span>฿{{ number_format($sale->total, 2) }}</span>
-                    <span class="text-gray-400">{{ $sale->paid_at?->format('d/m/Y H:i') }}</span>
-                </div>
-                @empty
-                <p class="text-gray-500 text-sm">No sales yet.</p>
+                <p class="text-muted small mb-0">No memberships yet.</p>
                 @endforelse
             </div>
         </div>
     </div>
-</x-app-layout>
+
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header"><h6 class="mb-0">Recent Sales</h6></div>
+            <div class="card-body">
+                @forelse($customer->sales as $sale)
+                <div class="d-flex justify-content-between py-2 border-bottom small">
+                    <a href="{{ route('pos.receipt', $sale) }}" class="font-monospace text-primary">{{ $sale->order_no }}</a>
+                    <span>฿{{ number_format($sale->total, 2) }}</span>
+                    <span class="text-muted">{{ $sale->paid_at?->format('d/m/Y H:i') }}</span>
+                </div>
+                @empty
+                <p class="text-muted small mb-0">No sales yet.</p>
+                @endforelse
+            </div>
+        </div>
+    </div>
+</div>
+@endsection

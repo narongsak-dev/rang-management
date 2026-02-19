@@ -1,68 +1,83 @@
-<x-app-layout>
-    <x-slot name="header">
-        <div class="flex justify-between items-center">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">Products</h2>
-            @can('create', App\Models\Product::class)
-            <a href="{{ route('products.create') }}" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded text-sm">+ Add Product</a>
-            @endcan
-        </div>
-    </x-slot>
-    <div class="py-8">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            @if(session('success'))
-                <div class="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">{{ session('success') }}</div>
-            @endif
-            <div class="bg-white shadow-sm sm:rounded-lg p-6">
-                <form method="GET" class="flex gap-3 mb-4">
-                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Search name/barcode..." class="border rounded px-3 py-2 flex-1">
-                    <select name="type" class="border rounded px-3 py-2">
-                        <option value="">All Types</option>
-                        @foreach(['sale','rent','service','fee'] as $t)
-                        <option value="{{ $t }}" @selected(request('type') === $t)>{{ ucfirst($t) }}</option>
-                        @endforeach
-                    </select>
-                    <button type="submit" class="bg-gray-700 text-white px-4 py-2 rounded">Search</button>
-                </form>
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Barcode</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
-                            <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">Price</th>
-                            <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">Stock</th>
-                            <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">Available</th>
-                            <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Status</th>
-                            <th class="px-4 py-3"></th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-                        @forelse($products as $product)
-                        <tr>
-                            <td class="px-4 py-3 font-mono text-sm">{{ $product->barcode }}</td>
-                            <td class="px-4 py-3">{{ $product->name }}</td>
-                            <td class="px-4 py-3">
-                                <span class="px-2 py-1 text-xs rounded-full {{ match($product->type) { 'sale'=>'bg-blue-100 text-blue-800', 'rent'=>'bg-green-100 text-green-800', 'service'=>'bg-yellow-100 text-yellow-800', default=>'bg-gray-100 text-gray-800' } }}">{{ $product->type }}</span>
-                            </td>
-                            <td class="px-4 py-3 text-right">฿{{ number_format($product->price, 2) }}</td>
-                            <td class="px-4 py-3 text-right">{{ $product->stock_qty }}</td>
-                            <td class="px-4 py-3 text-right">{{ $product->available_qty }}</td>
-                            <td class="px-4 py-3 text-center">
-                                <span class="px-2 py-1 text-xs rounded-full {{ $product->is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">{{ $product->is_active ? 'Active' : 'Inactive' }}</span>
-                            </td>
-                            <td class="px-4 py-3 text-right">
-                                @can('update', $product)
-                                <a href="{{ route('products.edit', $product) }}" class="text-indigo-600 hover:text-indigo-900 text-sm">Edit</a>
-                                @endcan
-                            </td>
-                        </tr>
-                        @empty
-                        <tr><td colspan="8" class="px-4 py-8 text-center text-gray-500">No products found.</td></tr>
-                        @endforelse
-                    </tbody>
-                </table>
-                <div class="mt-4">{{ $products->links() }}</div>
-            </div>
-        </div>
+@extends('layouts.admin')
+
+@section('title', 'Products')
+
+@section('breadcrumbs')
+    <li class="breadcrumb-item active">Products</li>
+@endsection
+
+@section('content')
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Products</h5>
+        @can('create', App\Models\Product::class)
+        <a href="{{ route('products.create') }}" class="btn btn-primary btn-sm">
+            <i class="bi bi-plus-lg"></i> Add Product
+        </a>
+        @endcan
     </div>
-</x-app-layout>
+    <div class="card-body">
+        <form method="GET" class="row g-2 mb-3">
+            <div class="col-sm-6">
+                <input type="text" name="search" value="{{ request('search') }}" placeholder="Search name/barcode..." class="form-control">
+            </div>
+            <div class="col-sm-3">
+                <select name="type" class="form-select">
+                    <option value="">All Types</option>
+                    @foreach(['sale','rent','service','fee'] as $t)
+                    <option value="{{ $t }}" @selected(request('type') === $t)>{{ ucfirst($t) }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-sm-3">
+                <button type="submit" class="btn btn-secondary w-100">Search</button>
+            </div>
+        </form>
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Barcode</th>
+                        <th>Name</th>
+                        <th>Type</th>
+                        <th class="text-end">Price</th>
+                        <th class="text-end">Stock</th>
+                        <th class="text-end">Available</th>
+                        <th class="text-center">Status</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($products as $product)
+                    <tr>
+                        <td class="font-monospace">{{ $product->barcode }}</td>
+                        <td>{{ $product->name }}</td>
+                        <td>
+                            <span class="badge {{ match($product->type) { 'sale'=>'bg-primary', 'rent'=>'bg-success', 'service'=>'bg-warning text-dark', default=>'bg-secondary' } }}">
+                                {{ $product->type }}
+                            </span>
+                        </td>
+                        <td class="text-end">฿{{ number_format($product->price, 2) }}</td>
+                        <td class="text-end">{{ $product->stock_qty }}</td>
+                        <td class="text-end">{{ $product->available_qty }}</td>
+                        <td class="text-center">
+                            <span class="badge {{ $product->is_active ? 'bg-success' : 'bg-danger' }}">
+                                {{ $product->is_active ? 'Active' : 'Inactive' }}
+                            </span>
+                        </td>
+                        <td class="text-end">
+                            @can('update', $product)
+                            <a href="{{ route('products.edit', $product) }}" class="btn btn-sm btn-outline-primary">Edit</a>
+                            @endcan
+                        </td>
+                    </tr>
+                    @empty
+                    <tr><td colspan="8" class="text-center text-muted py-4">No products found.</td></tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+        <div class="mt-3">{{ $products->links() }}</div>
+    </div>
+</div>
+@endsection
