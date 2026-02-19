@@ -7,8 +7,7 @@
 </button>
 
 <!-- Delete Account Modal -->
-<div class="modal fade" id="confirmUserDeletion" tabindex="-1"
-     @if($errors->userDeletion->isNotEmpty()) aria-modal="true" @endif>
+<div class="modal fade" id="confirmUserDeletion" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
             <form method="post" action="{{ route('profile.destroy') }}">

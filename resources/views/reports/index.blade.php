@@ -9,7 +9,7 @@
 @section('content')
 <div class="row g-4">
     <div class="col-md-6">
-        <a href="{{ route('reports.sales') }}" class="card text-decoration-none text-center h-100 shadow-sm hover-shadow">
+        <a href="{{ route('reports.sales') }}" class="card text-decoration-none text-center h-100 shadow-sm">
             <div class="card-body py-5">
                 <div class="fs-1 mb-3">💰</div>
                 <h5 class="fw-bold">Sales Report</h5>
