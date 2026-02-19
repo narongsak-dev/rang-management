@@ -9,6 +9,13 @@
             <x-input-error :messages="$errors->get('name')" class="mt-2" />
         </div>
 
+        <!-- Citizen ID -->
+        <div class="mt-4">
+            <x-input-label for="citizen_id" :value="__('Citizen ID')" />
+            <x-text-input id="citizen_id" class="block mt-1 w-full" type="text" name="citizen_id" :value="old('citizen_id')" required />
+            <x-input-error :messages="$errors->get('citizen_id')" class="mt-2" />
+        </div>
+
         <!-- Email Address -->
         <div class="mt-4">
             <x-input-label for="email" :value="__('Email')" />
