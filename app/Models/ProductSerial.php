@@ -6,22 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class RentalItem extends Model
+class ProductSerial extends Model
 {
-    protected $fillable = [
-        'rental_id', 'product_id', 'qty', 'unit_type',
-        'deposit_amount', 'returned_at',
-    ];
-
-    protected $casts = [
-        'deposit_amount' => 'decimal:2',
-        'returned_at' => 'datetime',
-    ];
-
-    public function rental(): BelongsTo
-    {
-        return $this->belongsTo(Rental::class);
-    }
+    protected $fillable = ['product_id', 'serial_no', 'status', 'note'];
 
     public function product(): BelongsTo
     {
@@ -31,5 +18,10 @@ class RentalItem extends Model
     public function rentalSerials(): HasMany
     {
         return $this->hasMany(RentalSerial::class);
+    }
+
+    public function scopeAvailable($query)
+    {
+        return $query->where('status', 'available');
     }
 }
