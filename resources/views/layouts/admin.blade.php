@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', config('app.name', 'Gun Range')) | {{ config('app.name', 'Gun Range') }}</title>
+    <title>@yield('title', config('app.name', 'ระบบจัดการสนามยิงปืน')) | {{ config('app.name', 'ระบบจัดการสนามยิงปืน') }}</title>
 
     <!-- Bootstrap 5 -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
@@ -18,9 +18,6 @@
 <body class="layout-fixed sidebar-expand-lg bg-body-tertiary">
 <div class="app-wrapper">
 
-    {{-- ============================================================ --}}
-    {{-- TOP NAVBAR                                                    --}}
-    {{-- ============================================================ --}}
     <nav class="app-header navbar navbar-expand bg-body">
         <div class="container-fluid">
             <ul class="navbar-nav">
@@ -31,7 +28,7 @@
                 </li>
                 <li class="nav-item d-none d-md-block">
                     <a href="{{ route('dashboard') }}" class="nav-link">
-                        <i class="bi bi-house"></i> Home
+                        <i class="bi bi-house"></i> หน้าหลัก
                     </a>
                 </li>
             </ul>
@@ -53,14 +50,14 @@
                         <li><hr class="dropdown-divider"></li>
                         <li>
                             <a class="dropdown-item" href="{{ route('profile.edit') }}">
-                                <i class="bi bi-person me-1"></i> Profile
+                                <i class="bi bi-person me-1"></i> โปรไฟล์
                             </a>
                         </li>
                         <li>
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
                                 <button type="submit" class="dropdown-item text-danger">
-                                    <i class="bi bi-box-arrow-right me-1"></i> Logout
+                                    <i class="bi bi-box-arrow-right me-1"></i> ออกจากระบบ
                                 </button>
                             </form>
                         </li>
@@ -71,14 +68,11 @@
         </div>
     </nav>
 
-    {{-- ============================================================ --}}
-    {{-- SIDEBAR                                                       --}}
-    {{-- ============================================================ --}}
     <aside class="app-sidebar bg-dark sidebar-dark-primary shadow" data-bs-theme="dark">
 
         <div class="sidebar-brand">
             <a href="{{ route('dashboard') }}" class="brand-link text-decoration-none">
-                <span class="brand-text fw-bold fs-5">🎯 Gun Range</span>
+                <span class="brand-text fw-bold fs-5">🎯 สนามยิงปืน</span>
             </a>
         </div>
 
@@ -90,7 +84,7 @@
                         <a href="{{ route('dashboard') }}"
                            class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
                             <i class="nav-icon bi bi-speedometer2"></i>
-                            <p>Dashboard</p>
+                            <p>{{ __('แดชบอร์ด') }}</p>
                         </a>
                     </li>
 
@@ -99,7 +93,7 @@
                         <a href="{{ route('pos.index') }}"
                            class="nav-link {{ request()->routeIs('pos.*') ? 'active' : '' }}">
                             <i class="nav-icon bi bi-cart3"></i>
-                            <p>Point of Sale</p>
+                            <p>{{ __('จุดขาย (POS)') }}</p>
                         </a>
                     </li>
 
@@ -107,7 +101,7 @@
                         <a href="{{ route('customers.index') }}"
                            class="nav-link {{ request()->routeIs('customers.*') ? 'active' : '' }}">
                             <i class="nav-icon bi bi-people"></i>
-                            <p>Customers</p>
+                            <p>{{ __('ลูกค้า') }}</p>
                         </a>
                     </li>
 
@@ -115,7 +109,7 @@
                         <a href="{{ route('memberships.index') }}"
                            class="nav-link {{ request()->routeIs('memberships.*') ? 'active' : '' }}">
                             <i class="nav-icon bi bi-card-checklist"></i>
-                            <p>Memberships</p>
+                            <p>{{ __('สมาชิก') }}</p>
                         </a>
                     </li>
 
@@ -123,7 +117,7 @@
                         <a href="{{ route('rentals.index') }}"
                            class="nav-link {{ request()->routeIs('rentals.*') ? 'active' : '' }}">
                             <i class="nav-icon bi bi-box-seam"></i>
-                            <p>Rentals</p>
+                            <p>{{ __('การเช่า') }}</p>
                         </a>
                     </li>
 
@@ -131,7 +125,7 @@
                         <a href="{{ route('reports.index') }}"
                            class="nav-link {{ request()->routeIs('reports.*') ? 'active' : '' }}">
                             <i class="nav-icon bi bi-bar-chart"></i>
-                            <p>Reports</p>
+                            <p>{{ __('รายงาน') }}</p>
                         </a>
                     </li>
                     @endhasrole
@@ -140,31 +134,47 @@
                         <a href="{{ route('products.index') }}"
                            class="nav-link {{ request()->routeIs('products.*') ? 'active' : '' }}">
                             <i class="nav-icon bi bi-boxes"></i>
-                            <p>Products</p>
+                            <p>{{ __('สินค้า') }}</p>
                         </a>
                     </li>
+
+                    @hasrole('inventory|admin')
+                    <li class="nav-item">
+                        <a href="{{ route('product-serials.index') }}"
+                           class="nav-link {{ request()->routeIs('product-serials.*') ? 'active' : '' }}">
+                            <i class="nav-icon bi bi-upc-scan"></i>
+                            <p>{{ __('Serial Number ปืน') }}</p>
+                        </a>
+                    </li>
+                    @endhasrole
+
+                    @hasrole('admin')
+                    <li class="nav-item">
+                        <a href="{{ route('roles.index') }}"
+                           class="nav-link {{ request()->routeIs('roles.*') || request()->routeIs('permissions.*') ? 'active' : '' }}">
+                            <i class="nav-icon bi bi-shield-lock"></i>
+                            <p>{{ __('จัดการสิทธิ์') }}</p>
+                        </a>
+                    </li>
+                    @endhasrole
 
                 </ul>
             </nav>
         </div>
     </aside>
 
-    {{-- ============================================================ --}}
-    {{-- MAIN CONTENT                                                  --}}
-    {{-- ============================================================ --}}
     <main class="app-main">
 
-        {{-- Content Header / Breadcrumb --}}
         <div class="app-content-header">
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-sm-6">
-                        <h3 class="mb-0">@yield('title', 'Dashboard')</h3>
+                        <h3 class="mb-0">@yield('title', 'แดชบอร์ด')</h3>
                     </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-end">
                             <li class="breadcrumb-item">
-                                <a href="{{ route('dashboard') }}">Home</a>
+                                <a href="{{ route('dashboard') }}">{{ __('หน้าหลัก') }}</a>
                             </li>
                             @yield('breadcrumbs')
                         </ol>
@@ -173,7 +183,6 @@
             </div>
         </div>
 
-        {{-- Page Content --}}
         <div class="app-content">
             <div class="container-fluid">
 
@@ -197,7 +206,7 @@
         </div>
     </main>
 
-</div><!-- /.app-wrapper -->
+</div>
 
 <!-- Bootstrap 5 JS Bundle -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
