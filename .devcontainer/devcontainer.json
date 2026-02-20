@@ -1,0 +1,13 @@
+{
+  "name": "Laravel 11 (PHP 8.2 + Node)",
+  "image": "mcr.microsoft.com/devcontainers/php:1-8.2",
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": { "version": "20" }
+  },
+  "postCreateCommand": "composer install && cp -n .env.example .env && php artisan key:generate || true && mkdir -p database && touch database/database.sqlite && php artisan migrate --seed || true && npm install",
+  "forwardPorts": [8000, 5173],
+  "portsAttributes": {
+    "8000": { "label": "Laravel", "onAutoForward": "openBrowser" },
+    "5173": { "label": "Vite", "onAutoForward": "silent" }
+  }
+}
