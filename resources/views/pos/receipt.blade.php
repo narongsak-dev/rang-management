@@ -1,74 +1,100 @@
-<x-app-layout>
-    <x-slot name="header">
-        <div class="flex justify-between items-center">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">Receipt</h2>
-            <div class="space-x-2">
-                <button onclick="window.print()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded text-sm">Print</button>
-                <a href="{{ route('pos.index') }}" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded text-sm">New Sale</a>
-            </div>
+@extends('layouts.admin')
+
+@section('title', 'Receipt')
+
+@section('breadcrumbs')
+    <li class="breadcrumb-item"><a href="{{ route('pos.index') }}">POS</a></li>
+    <li class="breadcrumb-item active">Receipt</li>
+@endsection
+
+@section('content')
+<div class="d-flex justify-content-end gap-2 mb-3">
+    <button onclick="window.print()" class="btn btn-primary">
+        <i class="bi bi-printer"></i> Print
+    </button>
+    <a href="{{ route('pos.index') }}" class="btn btn-success">
+        <i class="bi bi-cart-plus"></i> New Sale
+    </a>
+</div>
+
+<div class="card mx-auto" style="max-width: 480px;" id="receipt">
+    <div class="card-body p-5">
+        <div class="text-center mb-4">
+            <h4 class="fw-bold">🎯 GunRange Management</h4>
+            <p class="text-muted small mb-0">Official Receipt</p>
         </div>
-    </x-slot>
-    <div class="py-8">
-        <div class="max-w-xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white shadow-sm sm:rounded-lg p-8" id="receipt">
-                <div class="text-center mb-6">
-                    <h1 class="text-2xl font-bold">🎯 GunRange Management</h1>
-                    <p class="text-gray-500 text-sm">Official Receipt</p>
-                </div>
-                <div class="flex justify-between text-sm mb-1">
-                    <span class="font-medium">Receipt No:</span>
-                    <span class="font-mono">{{ $sale->receipt?->receipt_no ?? 'N/A' }}</span>
-                </div>
-                <div class="flex justify-between text-sm mb-1">
-                    <span class="font-medium">Order No:</span>
-                    <span class="font-mono">{{ $sale->order_no }}</span>
-                </div>
-                <div class="flex justify-between text-sm mb-1">
-                    <span class="font-medium">Date:</span>
-                    <span>{{ $sale->paid_at?->format('d/m/Y H:i') }}</span>
-                </div>
-                <div class="flex justify-between text-sm mb-1">
-                    <span class="font-medium">Staff:</span>
-                    <span>{{ $sale->staff->name }}</span>
-                </div>
-                @if($sale->customer)
-                <div class="flex justify-between text-sm mb-1">
-                    <span class="font-medium">Customer:</span>
-                    <span>{{ $sale->customer->name }}</span>
-                </div>
-                @endif
-                <div class="border-t border-b my-4 py-3">
-                    <table class="w-full text-sm">
-                        <thead>
-                            <tr class="text-gray-500">
-                                <th class="text-left py-1">Item</th>
-                                <th class="text-center">Qty</th>
-                                <th class="text-right">Price</th>
-                                <th class="text-right">Total</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($sale->items as $item)
-                            <tr>
-                                <td class="py-1">{{ $item->product->name }}{{ $item->is_rental ? ' [RENT]' : '' }}</td>
-                                <td class="text-center">{{ $item->qty }}</td>
-                                <td class="text-right">฿{{ number_format($item->unit_price, 2) }}</td>
-                                <td class="text-right">฿{{ number_format($item->line_total, 2) }}</td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-                <div class="space-y-1 text-sm">
-                    <div class="flex justify-between"><span>Subtotal</span><span>฿{{ number_format($sale->subtotal, 2) }}</span></div>
-                    @if($sale->discount > 0)
-                    <div class="flex justify-between text-red-600"><span>Discount</span><span>-฿{{ number_format($sale->discount, 2) }}</span></div>
-                    @endif
-                    <div class="flex justify-between font-bold text-lg border-t pt-1"><span>TOTAL</span><span>฿{{ number_format($sale->total, 2) }}</span></div>
-                    <div class="flex justify-between text-gray-500"><span>Payment</span><span>{{ strtoupper($sale->payment_method) }}</span></div>
-                </div>
-                <div class="text-center mt-6 text-gray-400 text-xs">Thank you for visiting GunRange!</div>
-            </div>
-        </div>
+        <table class="table table-borderless table-sm mb-0">
+            <tr>
+                <td class="fw-medium">Receipt No:</td>
+                <td class="text-end font-monospace">{{ $sale->receipt?->receipt_no ?? 'N/A' }}</td>
+            </tr>
+            <tr>
+                <td class="fw-medium">Order No:</td>
+                <td class="text-end font-monospace">{{ $sale->order_no }}</td>
+            </tr>
+            <tr>
+                <td class="fw-medium">Date:</td>
+                <td class="text-end">{{ $sale->paid_at?->format('d/m/Y H:i') }}</td>
+            </tr>
+            <tr>
+                <td class="fw-medium">Staff:</td>
+                <td class="text-end">{{ $sale->staff->name }}</td>
+            </tr>
+            @if($sale->customer)
+            <tr>
+                <td class="fw-medium">Customer:</td>
+                <td class="text-end">{{ $sale->customer->name }}</td>
+            </tr>
+            @endif
+        </table>
+
+        <hr>
+
+        <table class="table table-sm mb-0">
+            <thead>
+                <tr class="text-muted">
+                    <th>Item</th>
+                    <th class="text-center">Qty</th>
+                    <th class="text-end">Price</th>
+                    <th class="text-end">Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($sale->items as $item)
+                <tr>
+                    <td>{{ $item->product->name }}{{ $item->is_rental ? ' [RENT]' : '' }}</td>
+                    <td class="text-center">{{ $item->qty }}</td>
+                    <td class="text-end">฿{{ number_format($item->unit_price, 2) }}</td>
+                    <td class="text-end">฿{{ number_format($item->line_total, 2) }}</td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+
+        <hr>
+
+        <table class="table table-borderless table-sm mb-0">
+            <tr>
+                <td>Subtotal</td>
+                <td class="text-end">฿{{ number_format($sale->subtotal, 2) }}</td>
+            </tr>
+            @if($sale->discount > 0)
+            <tr class="text-danger">
+                <td>Discount</td>
+                <td class="text-end">-฿{{ number_format($sale->discount, 2) }}</td>
+            </tr>
+            @endif
+            <tr class="fw-bold fs-5 border-top">
+                <td>TOTAL</td>
+                <td class="text-end">฿{{ number_format($sale->total, 2) }}</td>
+            </tr>
+            <tr class="text-muted">
+                <td>Payment</td>
+                <td class="text-end">{{ strtoupper($sale->payment_method) }}</td>
+            </tr>
+        </table>
+
+        <div class="text-center mt-4 text-muted small">Thank you for visiting GunRange!</div>
     </div>
-</x-app-layout>
+</div>
+@endsection
