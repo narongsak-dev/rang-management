@@ -33,7 +33,7 @@ class POSService
                 $product = Product::lockForUpdate()->findOrFail($item['product_id']);
                 if ($item['is_rental']) {
                     if ($product->available_qty < $item['qty']) {
-                        throw new \RuntimeException("จำนวนที่ว่างไม่เพียงพอสำหรับ [{$product->name}] มีเพียง {$product->available_qty}");
+                        throw new \RuntimeException(__('messages.error.insufficient_available') . " [{$product->name}]");
                     }
                     $hasRental = true;
                 } else {
@@ -42,7 +42,7 @@ class POSService
                         ? $item['qty'] * ($product->units_per_box ?: 1)
                         : $item['qty'];
                     if ($product->stock_qty < $needStock) {
-                        throw new \RuntimeException("สต็อกไม่เพียงพอสำหรับ [{$product->name}] มีเพียง {$product->stock_qty}");
+                        throw new \RuntimeException(__('messages.error.insufficient_stock') . " [{$product->name}]");
                     }
                 }
             }
